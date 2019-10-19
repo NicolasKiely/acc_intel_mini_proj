@@ -22,6 +22,9 @@ parsed, invokes controller actions, and returns formatted data.
 ### DB_CONNECTION
 Database connection string, defaults to local sqlite file in data.
 
+### DATASET_NAME
+Path name to input data set, defaults to "data/movie_metadata.csv".
+
 
 ## Key Project Assumptions
 
