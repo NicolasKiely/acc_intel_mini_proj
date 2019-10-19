@@ -1,8 +1,11 @@
-""" Main file setting up model configuration
-
-"""
+""" Main file setting up model configuration """
 import sqlalchemy
+import sqlalchemy.ext.declarative
 import os
+
+
+#: Base class for models
+ModelBase = sqlalchemy.ext.declarative.declarative_base()
 
 
 class EngineWrapper(object):
