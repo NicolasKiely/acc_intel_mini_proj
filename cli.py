@@ -25,7 +25,7 @@ def main(argv):
     }
     # The "help" view is special in that in needs access to other views
     help_view = view_lookup['help']
-    help_view.views = cli_view_objects
+    help_view.view_lookup = view_lookup
     if len(argv) == 1:
         print('Usage: %s <command> [<arg>, <arg>, ...]' % sys.argv[0])
         help_view.do_command([])
@@ -34,6 +34,7 @@ def main(argv):
         command_name = argv[1].lower()
         command_args = argv[2:]
         if command_name in view_lookup:
+            logger.info('Running command: "%s"' % command_name)
             view_lookup[command_name].do_command(command_args)
 
         else:
