@@ -1,7 +1,9 @@
+""" Tables for movie cateogry fields """
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from src.model import db
+from src.model import common
 
 
 class MovieColor(db.ModelBase):
@@ -51,7 +53,7 @@ class Language(db.ModelBase):
     #: Primary key
     pk = Column(Integer, primary_key=True, autoincrement=True)
 
-    #: Country name
+    #: Language name
     name = Column(String(31), nullable=False, unique=True)
 
     #: Movie relationship
@@ -71,7 +73,7 @@ class ContentRating(db.ModelBase):
     #: Primary key
     pk = Column(Integer, primary_key=True, autoincrement=True)
 
-    #: Country name
+    #: Rating name
     name = Column(String(31), nullable=False, unique=True)
 
     #: Movie relationship
@@ -82,3 +84,18 @@ class ContentRating(db.ModelBase):
 
     def __str__(self):
         return self.name
+
+
+class Genre(db.ModelBase):
+    """ Movie genre """
+    __tablename__ = 'genre'
+
+    #: Primary key
+    pk = Column(Integer, primary_key=True, autoincrement=True)
+
+    #: Genre name
+    name = Column(String(31), nullable=False, unique=True)
+
+    movies = relationship(
+        'Movie', secondary=common.movie_genres, back_populates='genres'
+    )

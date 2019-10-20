@@ -19,12 +19,13 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from src.model import db
+from src.model import common
 import src.model.fields
 
 
 class Movie(db.ModelBase):
     """ Movie Model """
-    __tablename__ = 'movies'
+    __tablename__ = 'movie'
 
     # Identification fields
     #: Primary key
@@ -89,6 +90,11 @@ class Movie(db.ModelBase):
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
     movie_color = relationship('MovieColor', back_populates='movies')
+
+    #: Genres ration
+    genres = relationship(
+        'Genre', secondary=common.movie_genres, back_populates='movies'
+    )
 
     #: Movies are uniquely identified by title and year
     UniqueConstraint('movie_title', 'title_year')
