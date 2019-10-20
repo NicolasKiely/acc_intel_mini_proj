@@ -1,20 +1,18 @@
 """ Top level models for movie records and stats
 
 Unnormalized movie fields:
-    director_name,
-    director_facebook_likes, actor_3_facebook_likes, actor_2_name,
-    actor_1_facebook_likes, genres, actor_1_name,
-    actor_3_name,
-    plot_keywords,
-    language, content_rating,
-    actor_2_facebook_likes
-    country
+    director_name, director_facebook_likes,
+    actor_1_name, actor_1_facebook_likes,
+    actor_2_name, actor_2_facebook_likes,
+    actor_3_name, actor_3_facebook_likes,
+    plot_keywords, genres,
+    content_rating
 
 Normalized movie fields:
-    aspect_ratio, budget, cast_facebook_likes, color, duration,
-    facenumber_in_poster, gross, imdb_id, imdb_score, movie_facebook_likes,
-    movie_title, num_critic_for_reviews, num_voted_users, num_user_for_reviews,
-    title_year
+    aspect_ratio, budget, cast_facebook_likes, color, country, duration,
+    facenumber_in_poster, gross, imdb_id, imdb_score, language,
+    movie_facebook_likes, movie_title, num_critic_for_reviews, num_voted_users,
+    num_user_for_reviews, title_year
 """
 from sqlalchemy import (
     Column, ForeignKey, Integer, String, UniqueConstraint, Float
@@ -79,7 +77,14 @@ class Movie(db.ModelBase):
     #: Foreign key to country
     country_pk = Column(Integer, ForeignKey('country.pk'))
 
+    #: Country relationship
     country = relationship('Country', back_populates='movies')
+
+    #: Foreign key to language
+    language_pk = Column(Integer, ForeignKey('language.pk'))
+
+    #: Language relationship
+    language = relationship('Language', back_populates='movies')
 
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
@@ -107,16 +112,16 @@ class MovieColor(db.ModelBase):
     pk = Column(Integer, primary_key=True, autoincrement=True)
 
     #: Movie color text
-    color = Column(String(31), nullable=False, unique=True)
+    name = Column(String(31), nullable=False, unique=True)
 
     #: Movie relationship
     movies = relationship('Movie', back_populates='movie_color')
 
     def __repr__(self):
-        return '<MovieColor(color="%s")>' % self.color
+        return '<MovieColor(name="%s")>' % self.name
 
     def __str__(self):
-        return self.color
+        return self.name
 
 
 class Country(db.ModelBase):
@@ -134,6 +139,26 @@ class Country(db.ModelBase):
 
     def __repr__(self):
         return '<Country(name="%s")>' % self.name
+
+    def __str__(self):
+        return self.name
+
+
+class Language(db.ModelBase):
+    """ Movie Language """
+    __tablename__ = 'language'
+
+    #: Primary key
+    pk = Column(Integer, primary_key=True, autoincrement=True)
+
+    #: Country name
+    name = Column(String(31), nullable=False, unique=True)
+
+    #: Movie relationship
+    movies = relationship('Movie', back_populates='language')
+
+    def __repr__(self):
+        return '<Language(name="%s")>' % self.name
 
     def __str__(self):
         return self.name
