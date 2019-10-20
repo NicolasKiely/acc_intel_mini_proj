@@ -34,6 +34,9 @@ class Movie(db.ModelBase):
     #: Duration of a movie
     duration = Column(Integer, nullable=True)
 
+    #: Critic number for reviews
+    num_critic_for_reviews = Column(Integer, nullable=True)
+
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
 

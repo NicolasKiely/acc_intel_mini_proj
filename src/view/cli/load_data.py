@@ -69,6 +69,9 @@ def process_movie_records(session, data: pd.DataFrame):
     for i, record in data.iterrows():
         record_no = i+1
 
+        if record_no % 500 == 0:
+            print('Processing record #%s' % record_no)
+
         # Get searchable title+year of movie record
         movie_title = record['movie_title'].strip()
         movie_title_l = movie_title.lower()
@@ -110,13 +113,15 @@ def process_movie_records(session, data: pd.DataFrame):
 
         # Get movie's numerical stats
         duration = src.utils.nan_to_none(record['duration'])
+        num_critic = src.utils.nan_to_none(record['num_critic_for_reviews'])
 
         # Add movie record. Manaully take over session and comitting
         src.controller.movie.AddMovie(
             logger=logger, session=session, commit_enabled=False
         ).execute(
             movie_title=movie_title, title_year=movie_year,
-            color_pk=movie_color_pk, duration=duration
+            color_pk=movie_color_pk, duration=duration,
+            num_critic_for_reviews=num_critic
         )
 
     session.commit()

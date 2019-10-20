@@ -26,7 +26,7 @@ class ControllerAction(object):
 
     @property
     def logger(self):
-        return self.logger
+        return self._logger
 
     @abc.abstractmethod
     def query(self, **kwargs):

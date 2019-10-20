@@ -9,7 +9,7 @@ class AddMovie(action.ControllerAction):
     """ Adds movie record if it doesn't exist, otherwise updates it """
     def execute(
             self, movie_title: str, title_year: str, color_pk: int,
-            duration: int
+            duration: int, num_critic_for_reviews: int
     ):
         session = self.get_session()
 
@@ -39,6 +39,7 @@ class AddMovie(action.ControllerAction):
 
         # Set movie stats
         movie_record.duration = duration
+        movie_record.num_critic_for_reviews = num_critic_for_reviews
 
         self.commit(session)
 
