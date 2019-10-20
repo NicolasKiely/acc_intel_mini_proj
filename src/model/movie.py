@@ -1,7 +1,7 @@
 """ Top level models for movie records and stats
 
 Unnormalized movie fields:
-    director_name, num_critic_for_reviews,
+    director_name,
     director_facebook_likes, actor_3_facebook_likes, actor_2_name,
     actor_1_facebook_likes, gross, genres, actor_1_name,
     num_voted_users, cast_total_facebook_likes, actor_3_name,
@@ -10,7 +10,7 @@ Unnormalized movie fields:
     actor_2_facebook_likes, imdb_score, aspect_ratio, movie_facebook_likes
 
 Normalized movie fields:
-    color, duration, movie_title, title_year
+    color, duration, movie_title, num_critic_for_reviews, title_year
 """
 from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -33,6 +33,9 @@ class Movie(db.ModelBase):
 
     #: Duration of a movie
     duration = Column(Integer, nullable=True)
+
+    #: Number of facebook likes for given movie
+    movie_facebook_likes = Column(Integer, nullable=True)
 
     #: Critic number for reviews
     num_critic_for_reviews = Column(Integer, nullable=True)

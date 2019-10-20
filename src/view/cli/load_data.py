@@ -113,6 +113,7 @@ def process_movie_records(session, data: pd.DataFrame):
 
         # Get movie's numerical stats
         duration = src.utils.nan_to_none(record['duration'])
+        facebook_likes = src.utils.nan_to_none(record['movie_facebook_likes'])
         num_critic = src.utils.nan_to_none(record['num_critic_for_reviews'])
 
         # Add movie record. Manaully take over session and comitting
@@ -121,6 +122,7 @@ def process_movie_records(session, data: pd.DataFrame):
         ).execute(
             movie_title=movie_title, title_year=movie_year,
             color_pk=movie_color_pk, duration=duration,
+            movie_facebook_likes=facebook_likes,
             num_critic_for_reviews=num_critic
         )
 
