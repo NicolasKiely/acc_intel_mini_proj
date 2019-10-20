@@ -5,15 +5,16 @@ Unnormalized movie fields:
     director_facebook_likes, actor_3_facebook_likes, actor_2_name,
     actor_1_facebook_likes, genres, actor_1_name,
     actor_3_name,
-    plot_keywords, movie_imdb_link,
+    plot_keywords,
     language, content_rating,
     actor_2_facebook_likes
     country
 
 Normalized movie fields:
     aspect_ratio, budget, cast_facebook_likes, color, duration,
-    facenumber_in_poster, gross, imdb_score, movie_facebook_likes, movie_title,
-    num_critic_for_reviews, num_voted_users, num_user_for_reviews, title_year
+    facenumber_in_poster, gross, imdb_id, imdb_score, movie_facebook_likes,
+    movie_title, num_critic_for_reviews, num_voted_users, num_user_for_reviews,
+    title_year
 """
 from sqlalchemy import (
     Column, ForeignKey, Integer, String, UniqueConstraint, Float
@@ -75,6 +76,11 @@ class Movie(db.ModelBase):
     num_voted_users = Column(Integer, nullable=True)
 
     # Relations
+    #: Foreign key to country
+    country_pk = Column(Integer, ForeignKey('country.pk'))
+
+    country = relationship('Country', back_populates='movies')
+
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
 
@@ -83,6 +89,14 @@ class Movie(db.ModelBase):
 
     #: Movies are uniquely identified by title and year
     UniqueConstraint('movie_title', 'title_year')
+
+    def __repr__(self):
+        return '<Movie(title="%s"; year="%s")>' % (
+            self.movie_title, self.title_year
+        )
+
+    def __str__(self):
+        return '%s (%s)' % (self.movie_title, self.title_year)
 
 
 class MovieColor(db.ModelBase):
@@ -103,3 +117,23 @@ class MovieColor(db.ModelBase):
 
     def __str__(self):
         return self.color
+
+
+class Country(db.ModelBase):
+    """ Country """
+    __tablename__ = 'country'
+
+    #: Primary key
+    pk = Column(Integer, primary_key=True, autoincrement=True)
+
+    #: Country name
+    name = Column(String(31), nullable=False, unique=True)
+
+    #: Movie relationship
+    movies = relationship('Movie', back_populates='country')
+
+    def __repr__(self):
+        return '<Country(name="%s")>' % self.name
+
+    def __str__(self):
+        return self.name

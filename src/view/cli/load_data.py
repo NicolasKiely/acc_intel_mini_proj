@@ -4,7 +4,7 @@ import re
 from typing import List
 
 import src.controller.movie
-import src.controller.movie_colors
+import src.controller.movie_fields
 import src.model.db
 import src.model.movie
 import src.utils
@@ -44,6 +44,9 @@ class LoadDataView(cli_view.CliView):
         # Process movie fields
         process_movie_colors(data)
 
+        # Process countries
+        process_countries(data)
+
         # Process move record itself
         process_movie_records(session, data)
 
@@ -59,15 +62,34 @@ def process_movie_colors(data: pd.DataFrame):
         movie_color = raw_movie_color.strip().lower()
         movie_colors.append(movie_color)
 
-    src.controller.movie_colors.AddMovieColors(logger).execute(
+    src.controller.movie_fields.AddMovieColors(logger).execute(
         color_names=movie_colors
+    )
+
+
+def process_countries(data: pd.DataFrame):
+    """ Adds list of unqiue countries in database from data input """
+    raw_countries = data['country'].unique()
+    countries = []
+    for raw_country in raw_countries:
+        # Clean up name
+        if pd.isna(raw_country):
+            continue
+        country = raw_country.strip().lower()
+        countries.append(country)
+
+    src.controller.movie_fields.AddCountry(logger).execute(
+        country_names=countries
     )
 
 
 def process_movie_records(session, data: pd.DataFrame):
     """ Adds list of movie records to database from data input """
     # Lookup of movie record number by title+year
-    movie_color_lookup = src.controller.movie_colors.MovieColorIndexLookup(
+    movie_color_lookup = src.controller.movie_fields.MovieColorIndexLookup(
+        logger
+    ).query()
+    country_lookup = src.controller.movie_fields.CountryIndexLookup(
         logger
     ).query()
     movie_title_index = {}
@@ -116,6 +138,15 @@ def process_movie_records(session, data: pd.DataFrame):
         else:
             movie_color_pk = None
 
+        # Get country id
+        raw_country_name = record['country']
+        if not pd.isna(raw_country_name):
+            country_name = raw_country_name.strip().lower()
+            country_pk = country_lookup[country_name]
+
+        else:
+            country_pk = None
+
         # Get movie's imdb id
         imdb_link = record['movie_imdb_link']
         if imdb_link:
@@ -145,7 +176,8 @@ def process_movie_records(session, data: pd.DataFrame):
             logger=logger, session=session, commit_enabled=False
         ).execute(
             movie_title=movie_title, title_year=movie_year,
-            color_pk=movie_color_pk, aspect_ratio=aspect_ratio, budget=budget,
+            color_pk=movie_color_pk, country_pk=country_pk,
+            aspect_ratio=aspect_ratio, budget=budget,
             cast_facebook_likes=cast_likes, duration=duration, facenum=facenum,
             gross=gross, imdb_id=imdb_id, imdb_score=imdb_score,
             movie_facebook_likes=facebook_likes,

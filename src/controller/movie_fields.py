@@ -1,4 +1,4 @@
-""" Controller for movie colors """
+""" Controller for movie category fields """
 import abc
 from typing import Dict, List
 
@@ -53,3 +53,49 @@ class MovieColorIndexLookup(action.ControllerAction):
             lookup[movie_color.color.lower()] = movie_color.pk
 
         return lookup
+
+
+class AddCountry(action.ControllerAction):
+    """ Action to add list of counties to db, if they don't exist """
+    def execute(self, country_names: List[str]):
+        """
+        :param country_names: List of country names
+        """
+        session = self.get_session()
+        for country_name in country_names:
+            # Check if record exists in db
+            old_country_record = session.query(
+                src.model.movie.Country
+            ).filter(
+                src.model.movie.Country.name == country_name
+            ).one_or_none()
+
+            if old_country_record is None:
+                self.logger.info(
+                    'Creating new country record "%s"' % country_name
+                )
+                new_country_record = src.model.movie.Country(name=country_name)
+                session.add(new_country_record)
+
+        self.commit(session)
+
+    @abc.abstractmethod
+    def query(self, **kwargs):
+        pass
+
+
+class CountryIndexLookup(action.ControllerAction):
+    """ Action for building lookup of country id by name
+
+    Builds dictionary mapping lower case country name to country record pk
+    """
+    @abc.abstractmethod
+    def execute(self, **kwargs):
+        pass
+
+    def query(self) -> Dict[str, int]:
+        session = self.get_session()
+        return {
+            country.name.lower(): country.pk
+            for country in session.query(src.model.movie.Country).all()
+        }
