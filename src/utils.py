@@ -44,3 +44,11 @@ def load_df_from_dataset(file_name: str) -> pd.DataFrame:
 def get_default_dataset_filename() -> str:
     """ Returns default dataset file name """
     return os.environ.get('DATASET_NAME', 'data/movie_metadata.csv')
+
+
+def nan_to_none(value, default=None):
+    """ Casts numpy/pandas nan values to none, or some other default """
+    if pd.isna(value):
+        return default
+    else:
+        return value

@@ -1,8 +1,8 @@
 import logging
 import pandas as pd
-import sqlalchemy
 from typing import List
 
+import src.controller.movie
 import src.controller.movie_colors
 import src.model.db
 import src.model.movie
@@ -99,35 +99,24 @@ def process_movie_records(session, data: pd.DataFrame):
             # Mark movie by record number in dataframe
             movie_title_index[movie_title_l] = record_no
 
-        # Check if record exists in db by name
-        old_movie_record = session.query(
-            src.model.movie.Movie
-        ).filter(
-            sqlalchemy.func.lower(src.model.movie.Movie.movie_title)
-            == movie_title_l
-        ).filter(
-            src.model.movie.Movie.title_year == movie_year
-        ).one_or_none()
-
-        if old_movie_record is None:
-            # No record; create
-            logger.info('Creating new movie record "%s"' % movie_title)
-            movie_record = src.model.movie.Movie(
-                movie_title=movie_title, title_year=movie_year
-            )
-            session.add(movie_record)
-
-        else:
-            movie_record = old_movie_record
-
-        # Set movie color
+        # Get movie color id
         raw_movie_color_name = record['color']
         if not pd.isna(raw_movie_color_name):
             movie_color_name = raw_movie_color_name.strip().lower()
             movie_color_pk = movie_color_lookup[movie_color_name]
-            movie_record.movie_color_pk = movie_color_pk
 
         else:
-            movie_record.movie_color_pk = None
+            movie_color_pk = None
+
+        # Get movie's numerical stats
+        duration = src.utils.nan_to_none(record['duration'])
+
+        # Add movie record. Manaully take over session and comitting
+        src.controller.movie.AddMovie(
+            logger=logger, session=session, commit_enabled=False
+        ).execute(
+            movie_title=movie_title, title_year=movie_year,
+            color_pk=movie_color_pk, duration=duration
+        )
 
     session.commit()

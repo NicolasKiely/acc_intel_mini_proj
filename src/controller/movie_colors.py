@@ -1,4 +1,4 @@
-""" Controller """
+""" Controller for movie colors """
 import abc
 from typing import Dict, List
 
@@ -13,7 +13,7 @@ class AddMovieColors(action.ControllerAction):
         """
         :param color_names: List of movie colors by name
         """
-        session = src.model.db.EngineWrapper.get_session()
+        session = self.get_session()
         for color_name in color_names:
             # Check if record exists in db
             old_color_record = session.query(
@@ -29,7 +29,7 @@ class AddMovieColors(action.ControllerAction):
                 new_color_record = src.model.movie.MovieColor(color=color_name)
                 session.add(new_color_record)
 
-        session.commit()
+        self.commit(session)
 
     @abc.abstractmethod
     def query(self, **kwargs):
@@ -46,7 +46,7 @@ class MovieColorIndexLookup(action.ControllerAction):
         pass
 
     def query(self) -> Dict[str, int]:
-        session = src.model.db.EngineWrapper.get_session()
+        session = self.get_session()
         lookup = {}
         movie_colors = session.query(src.model.movie.MovieColor).all()
         for movie_color in movie_colors:
