@@ -114,12 +114,14 @@ def process_movie_records(session, data: pd.DataFrame):
         # Get movie's numerical stats
         aspect_ratio = src.utils.nan_to_none(record['aspect_ratio'])
         budget = src.utils.nan_to_none(record['budget'])
+        cast_likes = src.utils.nan_to_none(record['cast_total_facebook_likes'])
         duration = src.utils.nan_to_none(record['duration'])
         facenum = src.utils.nan_to_none(record['facenumber_in_poster'])
         gross = src.utils.nan_to_none(record['gross'])
         imdb_score = src.utils.nan_to_none(record['imdb_score'])
         facebook_likes = src.utils.nan_to_none(record['movie_facebook_likes'])
         num_critic = src.utils.nan_to_none(record['num_critic_for_reviews'])
+        num_user = src.utils.nan_to_none(record['num_user_for_reviews'])
         num_voted = src.utils.nan_to_none(record['num_voted_users'])
 
         # Add movie record. Manaully take over session and comitting
@@ -128,9 +130,11 @@ def process_movie_records(session, data: pd.DataFrame):
         ).execute(
             movie_title=movie_title, title_year=movie_year,
             color_pk=movie_color_pk, aspect_ratio=aspect_ratio, budget=budget,
-            duration=duration, facenum=facenum, gross=gross,
-            imdb_score=imdb_score, movie_facebook_likes=facebook_likes,
-            num_critic_for_reviews=num_critic, num_voted_users=num_voted
+            cast_facebook_likes=cast_likes, duration=duration,facenum=facenum,
+            gross=gross, imdb_score=imdb_score,
+            movie_facebook_likes=facebook_likes,
+            num_critic_for_reviews=num_critic, num_user_for_reviews=num_user,
+            num_voted_users=num_voted
         )
 
     session.commit()

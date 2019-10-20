@@ -4,16 +4,16 @@ Unnormalized movie fields:
     director_name,
     director_facebook_likes, actor_3_facebook_likes, actor_2_name,
     actor_1_facebook_likes, genres, actor_1_name,
-    num_voted_users, cast_total_facebook_likes, actor_3_name,
-    plot_keywords, movie_imdb_link, num_user_for_reviews,
+    actor_3_name,
+    plot_keywords, movie_imdb_link,
     language, content_rating,
     actor_2_facebook_likes
     country
 
 Normalized movie fields:
-    aspect_ratio, budget, color, duration, facenumber_in_poster, gross,
-    imdb_score, movie_facebook_likes, movie_title, num_critic_for_reviews,
-    title_year
+    aspect_ratio, budget, cast_facebook_likes, color, duration,
+    facenumber_in_poster, gross, imdb_score, movie_facebook_likes, movie_title,
+    num_critic_for_reviews, num_voted_users, num_user_for_reviews, title_year
 """
 from sqlalchemy import (
     Column, ForeignKey, Integer, String, UniqueConstraint, Float
@@ -44,6 +44,9 @@ class Movie(db.ModelBase):
     #: Filming budget
     budget = Column(Float, nullable=True)
 
+    #: Total number of facebook likes for all cast
+    cast_facebook_likes = Column(Integer, nullable=True)
+
     #: Duration of a movie
     duration = Column(Integer, nullable=True)
 
@@ -61,6 +64,9 @@ class Movie(db.ModelBase):
 
     #: Critic number for reviews
     num_critic_for_reviews = Column(Integer, nullable=True)
+
+    #: Number of users for reviews
+    num_user_for_reviews = Column(Integer, nullable=True)
 
     #: Number of voted users
     num_voted_users = Column(Integer, nullable=True)
