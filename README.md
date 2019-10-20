@@ -3,6 +3,16 @@
 Runs queries on imdb dataset.
 
 
+## Usage
+
+cli.py is the main script for driving the application. Run
+`python cli.py help`
+for general usage.
+
+To load data into a database, run
+`python cli.py load-data`.
+
+
 ## Project Structure
 
 The application is structured using a simple MVC pattern.
@@ -15,6 +25,8 @@ arguments and abstracted from the view or data source.
 
 In the view layer, arguments and data are passed from a user or client,
 parsed, invokes controller actions, and returns formatted data.
+
+The data/ directory holds input data, logs, and the database itself.
 
 
 ## Environment Variables

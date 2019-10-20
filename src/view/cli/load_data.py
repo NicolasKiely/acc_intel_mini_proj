@@ -64,6 +64,9 @@ class LoadDataView(cli_view.CliView):
         # Process move record itself
         process_movie_records(session, data)
 
+        # Attach keywords to movie records
+        process_movie_keywords(session, data)
+
 
 def get_clean_category_names(data_column):
     """ Returns list of unique categories from data input column """
@@ -113,13 +116,15 @@ def process_movie_records(session, data: pd.DataFrame):
     rating_lookup = src.controller.fields.ContentRatingIndexLookup(
         logger
     ).query()
+
     # Lookup of movie record number by title+year
     movie_title_index = {}
+    print('Updating movie records')
     for i, record in data.iterrows():
         record_no = i+1
 
         if record_no % 500 == 0:
-            print('Processing record #%s' % record_no)
+            print('\tProcessing record #%s' % record_no)
 
         # Get searchable title+year of movie record
         movie_title = record['movie_title'].strip()
@@ -197,3 +202,39 @@ def process_movie_records(session, data: pd.DataFrame):
         )
 
     session.commit()
+
+
+def process_movie_keywords(session, data: pd.DataFrame):
+    """ Attaches genre keywords to movie records """
+    movie_title_index = {}
+    movie_index = src.controller.movie.MovieLookupIndex(logger).query()
+    for i, record in data.iterrows():
+        record_no = i+1
+
+        if record_no % 500 == 0:
+            print('\tProcessing record #%s' % record_no)
+
+        # Get searchable title+year of movie record
+        movie_title = record['movie_title'].strip()
+        movie_title_l = movie_title.lower()
+        movie_year = record['title_year']
+
+        if pd.isna(movie_title_l):
+            continue
+
+        if pd.isna(movie_year):
+            movie_year = ''
+        else:
+            movie_year = str(movie_year)
+
+        movie_record_index = (movie_title_l, movie_year)
+
+        if movie_record_index in movie_title_index:
+            continue
+        else:
+            # Mark movie by record number in dataframe
+            movie_title_index[movie_title_l] = record_no
+
+        movie_pk = movie_index[movie_record_index]
+
+    #session.commit()

@@ -1,8 +1,10 @@
 import abc
 import sqlalchemy
+from typing import List
 
 from src.controller import action
 import src.model.movie
+import src.model.fields
 
 
 class AddMovie(action.ControllerAction):
@@ -59,6 +61,31 @@ class AddMovie(action.ControllerAction):
         movie_record.num_voted_users = num_voted_users
 
         self.commit(session)
+
+    @abc.abstractmethod
+    def query(self, **kwargs):
+        pass
+
+
+class MovieLookupIndex(action.ControllerAction):
+    """ Action to build lookup table of movie (title, year) tuple to id """
+    @abc.abstractmethod
+    def execute(self, **kwargs):
+        pass
+
+    def query(self):
+        session = self.get_session()
+        return {
+            (record.movie_title.lower(), record.title_year): record.pk
+            for record in session.query(src.model.movie.Movie).all()
+        }
+
+
+class AttachMovieGenre(action.ControllerAction):
+    """ Attaches genres to movie. Records must exist in db. """
+    def execute(self, movie_pk: int, genre_pks: List[int]):
+        session = self.get_session()
+
 
     @abc.abstractmethod
     def query(self, **kwargs):

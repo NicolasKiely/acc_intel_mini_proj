@@ -114,7 +114,19 @@ class AddGenres(AddMovieFieldBaseClass):
         self.execute_add(genre_names, src.model.fields.Genre, 'genre')
 
 
+class GenreIndexLookup(MovieFieldIndexLookup):
+    """ Action for building lookup of grenre id by name """
+    def query(self) -> Dict[str, int]:
+        return self.query_index_lookup(src.model.fields.Genre)
+
+
 class AddPlotKeywords(AddMovieFieldBaseClass):
     """ Action to add list of keyword posts to db, if they don't exist """
     def execute(self, keyword_names: List[str]):
         self.execute_add(keyword_names, src.model.fields.Keyword, 'keyword')
+
+
+class PlotKeywordIndexLookup(MovieFieldIndexLookup):
+    """ Action for building lookup of plot keyword id by name """
+    def query(self) -> Dict[str, int]:
+        return self.query_index_lookup(src.model.fields.Keyword)
