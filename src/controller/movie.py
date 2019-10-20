@@ -9,8 +9,9 @@ class AddMovie(action.ControllerAction):
     """ Adds movie record if it doesn't exist, otherwise updates it """
     def execute(
             self, movie_title: str, title_year: str, color_pk: int,
-            aspect_ratio: float, duration: int, imdb_score:float,
-            movie_facebook_likes: int, num_critic_for_reviews: int
+            aspect_ratio: float, budget: float, duration: int, gross: float,
+            imdb_score: float, movie_facebook_likes: int,
+            num_critic_for_reviews: int
     ):
         session = self.get_session()
 
@@ -26,7 +27,6 @@ class AddMovie(action.ControllerAction):
 
         if old_movie_record is None:
             # No record; create
-            self.logger.info('Creating new movie record "%s"' % movie_title)
             movie_record = src.model.movie.Movie(
                 movie_title=movie_title, title_year=title_year
             )
@@ -40,7 +40,9 @@ class AddMovie(action.ControllerAction):
 
         # Set movie stats
         movie_record.aspect_ratio = aspect_ratio
+        movie_record.budget = budget
         movie_record.duration = duration
+        movie_record.gross = gross
         movie_record.imdb_score = imdb_score
         movie_record.movie_facebook_likes = movie_facebook_likes
         movie_record.num_critic_for_reviews = num_critic_for_reviews

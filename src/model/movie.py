@@ -37,8 +37,14 @@ class Movie(db.ModelBase):
     #: Film aspect ratio
     aspect_ratio = Column(Float, nullable=True)
 
+    #: Filming budget
+    budget = Column(Float, nullable=True)
+
     #: Duration of a movie
     duration = Column(Integer, nullable=True)
+
+    #: Gross revenue
+    gross = Column(Float, nullable=True)
 
     #: IMDB score
     imdb_score = Column(Float, nullable=True)
