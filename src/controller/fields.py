@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from src.controller import action
 import src.model.db
-import src.model.movie
+import src.model.fields
 
 
 class AddMovieFieldBaseClass(action.ControllerAction):
@@ -63,46 +63,46 @@ class MovieFieldIndexLookup(action.ControllerAction):
 class AddMovieColors(AddMovieFieldBaseClass):
     """ Action to add list of movie colors to db, if they don't exist """
     def execute(self, color_names: List[str]):
-        self.execute_add(color_names, src.model.movie.MovieColor, 'movie color')
+        self.execute_add(color_names, src.model.fields.MovieColor, 'moviecolor')
 
 
 class MovieColorIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of movie color id by name """
     def query(self) -> Dict[str, int]:
-        return self.query_index_lookup(src.model.movie.MovieColor)
+        return self.query_index_lookup(src.model.fields.MovieColor)
 
 
 class AddCountries(AddMovieFieldBaseClass):
     """ Action to add list of counties to db, if they don't exist """
     def execute(self, country_names: List[str]):
-        self.execute_add(country_names, src.model.movie.Country, 'country')
+        self.execute_add(country_names, src.model.fields.Country, 'country')
 
 
 class CountryIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of country id by name """
     def query(self) -> Dict[str, int]:
-        return self.query_index_lookup(src.model.movie.Country)
+        return self.query_index_lookup(src.model.fields.Country)
 
 
 class AddLanguages(AddMovieFieldBaseClass):
     """ Action to add list of languages to db, if they don't exist """
     def execute(self, language_names: List[str]):
-        self.execute_add(language_names, src.model.movie.Language, 'language')
+        self.execute_add(language_names, src.model.fields.Language, 'language')
 
 
 class LanguageIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of language id by name """
     def query(self) -> Dict[str, int]:
-        return self.query_index_lookup(src.model.movie.Language)
+        return self.query_index_lookup(src.model.fields.Language)
 
 
 class AddContentRating(AddMovieFieldBaseClass):
     """ Action to add list of content ratings to db, if they don't exist """
     def execute(self, rating_names: List[str]):
-        self.execute_add(rating_names, src.model.movie.ContentRating, 'rating')
+        self.execute_add(rating_names, src.model.fields.ContentRating, 'rating')
 
 
 class ContentRatingIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of content rating id by name """
     def query(self) -> Dict[str, int]:
-        return self.query_index_lookup(src.model.movie.ContentRating)
+        return self.query_index_lookup(src.model.fields.ContentRating)

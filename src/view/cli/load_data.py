@@ -4,7 +4,7 @@ import re
 from typing import List
 
 import src.controller.movie
-import src.controller.movie_fields
+import src.controller.fields
 import src.model.db
 import src.model.movie
 import src.utils
@@ -42,16 +42,16 @@ class LoadDataView(cli_view.CliView):
         session = src.model.db.EngineWrapper.get_session()
 
         # Process movie category fields
-        src.controller.movie_fields.AddMovieColors(logger).execute(
+        src.controller.fields.AddMovieColors(logger).execute(
             color_names=get_clean_category_names(data['color'])
         )
-        src.controller.movie_fields.AddCountries(logger).execute(
+        src.controller.fields.AddCountries(logger).execute(
             country_names=get_clean_category_names(data['country'])
         )
-        src.controller.movie_fields.AddLanguages(logger).execute(
+        src.controller.fields.AddLanguages(logger).execute(
             language_names=get_clean_category_names(data['language'])
         )
-        src.controller.movie_fields.AddContentRating(logger).execute(
+        src.controller.fields.AddContentRating(logger).execute(
             rating_names=get_clean_category_names(data['content_rating'])
         )
 
@@ -79,16 +79,16 @@ def lookup_category_id(raw_name: str, lookup):
 def process_movie_records(session, data: pd.DataFrame):
     """ Adds list of movie records to database from data input """
     # Category lookup fiels
-    movie_color_lookup = src.controller.movie_fields.MovieColorIndexLookup(
+    movie_color_lookup = src.controller.fields.MovieColorIndexLookup(
         logger
     ).query()
-    country_lookup = src.controller.movie_fields.CountryIndexLookup(
+    country_lookup = src.controller.fields.CountryIndexLookup(
         logger
     ).query()
-    language_lookup = src.controller.movie_fields.LanguageIndexLookup(
+    language_lookup = src.controller.fields.LanguageIndexLookup(
         logger
     ).query()
-    rating_lookup = src.controller.movie_fields.ContentRatingIndexLookup(
+    rating_lookup = src.controller.fields.ContentRatingIndexLookup(
         logger
     ).query()
     # Lookup of movie record number by title+year
