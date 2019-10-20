@@ -6,11 +6,10 @@ Unnormalized movie fields:
     actor_2_name, actor_2_facebook_likes,
     actor_3_name, actor_3_facebook_likes,
     plot_keywords, genres,
-    content_rating
 
 Normalized movie fields:
-    aspect_ratio, budget, cast_facebook_likes, color, country, duration,
-    facenumber_in_poster, gross, imdb_id, imdb_score, language,
+    aspect_ratio, budget, cast_facebook_likes, color, content_rating, country,
+    duration, facenumber_in_poster, gross, imdb_id, imdb_score, language,
     movie_facebook_likes, movie_title, num_critic_for_reviews, num_voted_users,
     num_user_for_reviews, title_year
 """
@@ -74,22 +73,20 @@ class Movie(db.ModelBase):
     num_voted_users = Column(Integer, nullable=True)
 
     # Relations
+    #: Foreign key to content rating
+    content_rating_pk = Column(Integer, ForeignKey('content_rating.pk'))
+    content_rating = relationship('ContentRating', back_populates='movies')
+
     #: Foreign key to country
     country_pk = Column(Integer, ForeignKey('country.pk'))
-
-    #: Country relationship
     country = relationship('Country', back_populates='movies')
 
     #: Foreign key to language
     language_pk = Column(Integer, ForeignKey('language.pk'))
-
-    #: Language relationship
     language = relationship('Language', back_populates='movies')
 
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
-
-    #: Movie color relationship
     movie_color = relationship('MovieColor', back_populates='movies')
 
     #: Movies are uniquely identified by title and year
@@ -159,6 +156,26 @@ class Language(db.ModelBase):
 
     def __repr__(self):
         return '<Language(name="%s")>' % self.name
+
+    def __str__(self):
+        return self.name
+
+
+class ContentRating(db.ModelBase):
+    """ Movie content rating """
+    __tablename__ = 'content_rating'
+
+    #: Primary key
+    pk = Column(Integer, primary_key=True, autoincrement=True)
+
+    #: Country name
+    name = Column(String(31), nullable=False, unique=True)
+
+    #: Movie relationship
+    movies = relationship('Movie', back_populates='content_rating')
+
+    def __repr__(self):
+        return '<Content Rating(name="%s")>' % self.name
 
     def __str__(self):
         return self.name

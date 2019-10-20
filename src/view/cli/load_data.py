@@ -41,51 +41,22 @@ class LoadDataView(cli_view.CliView):
         src.model.db.ModelBase.metadata.create_all(engine)
         session = src.model.db.EngineWrapper.get_session()
 
-        # Process movie fields
-        process_movie_colors(data)
-
-        # Process countries
-        process_countries(data)
-
-        # Process languages
+        # Process movie category fields
+        src.controller.movie_fields.AddMovieColors(logger).execute(
+            color_names=get_clean_category_names(data['color'])
+        )
+        src.controller.movie_fields.AddCountries(logger).execute(
+            country_names=get_clean_category_names(data['country'])
+        )
         src.controller.movie_fields.AddLanguages(logger).execute(
-            get_clean_category_names(data['language'])
+            language_names=get_clean_category_names(data['language'])
+        )
+        src.controller.movie_fields.AddContentRating(logger).execute(
+            rating_names=get_clean_category_names(data['content_rating'])
         )
 
         # Process move record itself
         process_movie_records(session, data)
-
-
-def process_movie_colors(data: pd.DataFrame):
-    """ Adds list of unique colors in database from data input """
-    raw_movie_colors = data['color'].unique()
-    movie_colors = []
-    for raw_movie_color in raw_movie_colors:
-        # Clean up color name
-        if pd.isna(raw_movie_color):
-            continue
-        movie_color = raw_movie_color.strip().lower()
-        movie_colors.append(movie_color)
-
-    src.controller.movie_fields.AddMovieColors(logger).execute(
-        color_names=movie_colors
-    )
-
-
-def process_countries(data: pd.DataFrame):
-    """ Adds list of unqiue countries in database from data input """
-    raw_countries = data['country'].unique()
-    countries = []
-    for raw_country in raw_countries:
-        # Clean up name
-        if pd.isna(raw_country):
-            continue
-        country = raw_country.strip().lower()
-        countries.append(country)
-
-    src.controller.movie_fields.AddCountries(logger).execute(
-        country_names=countries
-    )
 
 
 def get_clean_category_names(data_column):
@@ -115,6 +86,9 @@ def process_movie_records(session, data: pd.DataFrame):
         logger
     ).query()
     language_lookup = src.controller.movie_fields.LanguageIndexLookup(
+        logger
+    ).query()
+    rating_lookup = src.controller.movie_fields.ContentRatingIndexLookup(
         logger
     ).query()
     # Lookup of movie record number by title+year
@@ -159,6 +133,7 @@ def process_movie_records(session, data: pd.DataFrame):
         movie_color_pk = lookup_category_id(record['color'], movie_color_lookup)
         country_pk = lookup_category_id(record['country'], country_lookup)
         language_pk = lookup_category_id(record['language'], language_lookup)
+        rating_pk = lookup_category_id(record['content_rating'], rating_lookup)
 
         # Get movie's imdb id
         imdb_link = record['movie_imdb_link']
@@ -189,8 +164,9 @@ def process_movie_records(session, data: pd.DataFrame):
             logger=logger, session=session, commit_enabled=False
         ).execute(
             movie_title=movie_title, title_year=movie_year,
-            color_pk=movie_color_pk, country_pk=country_pk,
-            language_pk=language_pk, aspect_ratio=aspect_ratio, budget=budget,
+            content_rating_pk=rating_pk, color_pk=movie_color_pk,
+            country_pk=country_pk, language_pk=language_pk,
+            aspect_ratio=aspect_ratio, budget=budget,
             cast_facebook_likes=cast_likes, duration=duration, facenum=facenum,
             gross=gross, imdb_id=imdb_id, imdb_score=imdb_score,
             movie_facebook_likes=facebook_likes,

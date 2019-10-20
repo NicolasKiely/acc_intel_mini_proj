@@ -40,7 +40,7 @@ class AddMovieFieldBaseClass(action.ControllerAction):
         pass
 
 
-class MovieFieldIndexLookuo(action.ControllerAction):
+class MovieFieldIndexLookup(action.ControllerAction):
     """ Base class for building lookup of record id by name
 
     Builds dictionary mapping lower case name to record pk
@@ -66,7 +66,7 @@ class AddMovieColors(AddMovieFieldBaseClass):
         self.execute_add(color_names, src.model.movie.MovieColor, 'movie color')
 
 
-class MovieColorIndexLookup(MovieFieldIndexLookuo):
+class MovieColorIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of movie color id by name """
     def query(self) -> Dict[str, int]:
         return self.query_index_lookup(src.model.movie.MovieColor)
@@ -78,7 +78,7 @@ class AddCountries(AddMovieFieldBaseClass):
         self.execute_add(country_names, src.model.movie.Country, 'country')
 
 
-class CountryIndexLookup(MovieFieldIndexLookuo):
+class CountryIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of country id by name """
     def query(self) -> Dict[str, int]:
         return self.query_index_lookup(src.model.movie.Country)
@@ -90,7 +90,19 @@ class AddLanguages(AddMovieFieldBaseClass):
         self.execute_add(language_names, src.model.movie.Language, 'language')
 
 
-class LanguageIndexLookup(MovieFieldIndexLookuo):
+class LanguageIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of language id by name """
     def query(self) -> Dict[str, int]:
         return self.query_index_lookup(src.model.movie.Language)
+
+
+class AddContentRating(AddMovieFieldBaseClass):
+    """ Action to add list of content ratings to db, if they don't exist """
+    def execute(self, rating_names: List[str]):
+        self.execute_add(rating_names, src.model.movie.ContentRating, 'rating')
+
+
+class ContentRatingIndexLookup(MovieFieldIndexLookup):
+    """ Action for building lookup of content rating id by name """
+    def query(self) -> Dict[str, int]:
+        return self.query_index_lookup(src.model.movie.ContentRating)
