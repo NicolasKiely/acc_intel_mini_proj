@@ -3,15 +3,17 @@
 Unnormalized movie fields:
     director_name,
     director_facebook_likes, actor_3_facebook_likes, actor_2_name,
-    actor_1_facebook_likes, gross, genres, actor_1_name,
+    actor_1_facebook_likes, genres, actor_1_name,
     num_voted_users, cast_total_facebook_likes, actor_3_name,
-    facenumber_in_poster, plot_keywords, movie_imdb_link, num_user_for_reviews,
-    language, country, content_rating, budget,
+    plot_keywords, movie_imdb_link, num_user_for_reviews,
+    language, content_rating,
     actor_2_facebook_likes
+    country
 
 Normalized movie fields:
-    aspect_ratio, color, duration, imdb_score, movie_facebook_likes,
-    movie_title, num_critic_for_reviews, title_year
+    aspect_ratio, budget, color, duration, facenumber_in_poster, gross,
+    imdb_score, movie_facebook_likes, movie_title, num_critic_for_reviews,
+    title_year
 """
 from sqlalchemy import (
     Column, ForeignKey, Integer, String, UniqueConstraint, Float
@@ -25,6 +27,7 @@ class Movie(db.ModelBase):
     """ Movie Model """
     __tablename__ = 'movies'
 
+    # Identification fields
     #: Primary key
     pk = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -34,6 +37,7 @@ class Movie(db.ModelBase):
     #: Title year (note: empty year should be treated as empty string)
     title_year = Column(String(16), nullable=False)
 
+    # Stats fields
     #: Film aspect ratio
     aspect_ratio = Column(Float, nullable=True)
 
@@ -42,6 +46,9 @@ class Movie(db.ModelBase):
 
     #: Duration of a movie
     duration = Column(Integer, nullable=True)
+
+    #: Number of faces in poster
+    facenum = Column(Integer, nullable=True)
 
     #: Gross revenue
     gross = Column(Float, nullable=True)
@@ -55,6 +62,10 @@ class Movie(db.ModelBase):
     #: Critic number for reviews
     num_critic_for_reviews = Column(Integer, nullable=True)
 
+    #: Number of voted users
+    num_voted_users = Column(Integer, nullable=True)
+
+    # Relations
     #: Foreign key to movie color
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
 
