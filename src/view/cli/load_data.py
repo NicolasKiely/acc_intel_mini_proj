@@ -112,6 +112,7 @@ def process_movie_records(session, data: pd.DataFrame):
             movie_color_pk = None
 
         # Get movie's numerical stats
+        aspect_ratio = src.utils.nan_to_none(record['aspect_ratio'])
         duration = src.utils.nan_to_none(record['duration'])
         facebook_likes = src.utils.nan_to_none(record['movie_facebook_likes'])
         num_critic = src.utils.nan_to_none(record['num_critic_for_reviews'])
@@ -121,8 +122,8 @@ def process_movie_records(session, data: pd.DataFrame):
             logger=logger, session=session, commit_enabled=False
         ).execute(
             movie_title=movie_title, title_year=movie_year,
-            color_pk=movie_color_pk, duration=duration,
-            movie_facebook_likes=facebook_likes,
+            color_pk=movie_color_pk, aspect_ratio=aspect_ratio,
+            duration=duration, movie_facebook_likes=facebook_likes,
             num_critic_for_reviews=num_critic
         )
 
