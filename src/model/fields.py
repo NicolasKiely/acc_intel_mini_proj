@@ -99,3 +99,18 @@ class Genre(db.ModelBase):
     movies = relationship(
         'Movie', secondary=common.movie_genres, back_populates='genres'
     )
+
+
+class Keyword(db.ModelBase):
+    """ Movie plot keyword """
+    __tablename__ = 'keyword'
+
+    #: Primary key
+    pk = Column(Integer, primary_key=True, autoincrement=True)
+
+    #: Keyword name
+    name = Column(String(31), nullable=False, unique=True)
+
+    movies = relationship(
+        'Movie', secondary=common.movie_keywords, back_populates='keywords'
+    )

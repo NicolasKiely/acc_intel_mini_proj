@@ -91,9 +91,14 @@ class Movie(db.ModelBase):
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
     movie_color = relationship('MovieColor', back_populates='movies')
 
-    #: Genres ration
+    #: Genres relation
     genres = relationship(
         'Genre', secondary=common.movie_genres, back_populates='movies'
+    )
+
+    #: Keywords relation
+    keywords = relationship(
+        'Keyword', secondary=common.movie_keywords, back_populates='movies'
     )
 
     #: Movies are uniquely identified by title and year
