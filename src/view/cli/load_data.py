@@ -3,6 +3,7 @@ import pandas as pd
 import sqlalchemy
 from typing import List
 
+import src.controller.movie_colors
 import src.model.db
 import src.model.movie
 import src.utils
@@ -36,39 +37,34 @@ class LoadDataView(cli_view.CliView):
         session = src.model.db.EngineWrapper.get_session()
 
         # Process movie fields
-        process_movie_colors(session, data)
+        process_movie_colors(data)
 
         # Process move record itself
         process_movie_records(session, data)
 
 
-def process_movie_colors(session, data: pd.DataFrame):
+def process_movie_colors(data: pd.DataFrame):
     """ Adds list of unique colors in database from data input """
-    movie_colors = data['color'].unique()
-    for movie_color_raw in movie_colors:
+    raw_movie_colors = data['color'].unique()
+    movie_colors = []
+    for raw_movie_color in raw_movie_colors:
         # Clean up color name
-        if pd.isna(movie_color_raw):
+        if pd.isna(raw_movie_color):
             continue
-        movie_color = movie_color_raw.strip().lower()
+        movie_color = raw_movie_color.strip().lower()
+        movie_colors.append(movie_color)
 
-        # Check if record exists in db
-        old_color_record = session.query(
-            src.model.movie.MovieColor
-        ).filter(
-            src.model.movie.MovieColor.color == movie_color
-        ).one_or_none()
-
-        if old_color_record is None:
-            logger.info('Creating new movie_color record "%s"' % movie_color)
-            new_color_record = src.model.movie.MovieColor(color=movie_color)
-            session.add(new_color_record)
-
-    session.commit()
+    src.controller.movie_colors.AddMovieColors(logger).execute(
+        color_names=movie_colors
+    )
 
 
 def process_movie_records(session, data: pd.DataFrame):
     """ Adds list of movie records to database from data input """
     # Lookup of movie record number by title+year
+    movie_color_lookup = src.controller.movie_colors.MovieColorIndexLookup(
+        logger
+    ).query()
     movie_title_index = {}
     for i, record in data.iterrows():
         record_no = i+1
@@ -85,11 +81,7 @@ def process_movie_records(session, data: pd.DataFrame):
             continue
 
         if pd.isna(movie_year):
-            logger.warning(
-                'Movie with no year on record #%s' % record_no
-            )
             movie_year = ''
-
         else:
             movie_year = str(movie_year)
 
@@ -127,5 +119,15 @@ def process_movie_records(session, data: pd.DataFrame):
 
         else:
             movie_record = old_movie_record
+
+        # Set movie color
+        raw_movie_color_name = record['color']
+        if not pd.isna(raw_movie_color_name):
+            movie_color_name = raw_movie_color_name.strip().lower()
+            movie_color_pk = movie_color_lookup[movie_color_name]
+            movie_record.movie_color_pk = movie_color_pk
+
+        else:
+            movie_record.movie_color_pk = None
 
     session.commit()
