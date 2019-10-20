@@ -112,3 +112,9 @@ class AddGenres(AddMovieFieldBaseClass):
     """ Action to add list of genres to db, if they don't exist """
     def execute(self, genre_names: List[str]):
         self.execute_add(genre_names, src.model.fields.Genre, 'genre')
+
+
+class AddPlotKeywords(AddMovieFieldBaseClass):
+    """ Action to add list of keyword posts to db, if they don't exist """
+    def execute(self, keyword_names: List[str]):
+        self.execute_add(keyword_names, src.model.fields.Keyword, 'keyword')

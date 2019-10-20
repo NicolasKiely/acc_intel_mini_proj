@@ -57,6 +57,9 @@ class LoadDataView(cli_view.CliView):
         src.controller.fields.AddGenres(logger).execute(
             genre_names=get_clean_keyword_names(data['genres'])
         )
+        src.controller.fields.AddPlotKeywords(logger).execute(
+            keyword_names=get_clean_keyword_names(data['plot_keywords'])
+        )
 
         # Process move record itself
         process_movie_records(session, data)
