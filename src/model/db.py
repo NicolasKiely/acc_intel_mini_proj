@@ -1,8 +1,12 @@
 """ Main file setting up model configuration """
+import logging
+import os
 import sqlalchemy
 import sqlalchemy.ext.declarative
-import os
+import sqlalchemy.orm
 
+
+logger = logging.getLogger(__name__)
 
 #: Base class for models
 ModelBase = sqlalchemy.ext.declarative.declarative_base()
@@ -10,29 +14,29 @@ ModelBase = sqlalchemy.ext.declarative.declarative_base()
 
 class EngineWrapper(object):
     """ Manages SQLAlchemy engine and configuration """
-    _engine_config_str = None
     _engine = None
+    _session_factory = None
 
     @classmethod
     def get_config_str(cls) -> str:
         return os.environ.get(
-            cls.get_environ_db_connection_key(),
-            cls.get_environ_db_connection_key()
+            'DB_CONNECTION', 'sqlite:///data/db.sqlite'
         )
 
     @classmethod
     def get_engine(cls):
         """ Returns sqlalchemy engine """
         if cls._engine is None:
-            cls._engine = sqlalchemy.create_engine(cls._engine_config_str)
+            logger.info('Connecting to database')
+            cls._engine = sqlalchemy.create_engine(cls.get_config_str())
         return cls._engine
 
-    @staticmethod
-    def get_default_db_connection_str() -> str:
-        """ Default db connection """
-        return 'sqlite:///data/db.sqlite'
+    @classmethod
+    def get_session(cls):
+        """ Returns new sqlalchemy session """
+        if cls._session_factory is None:
+            cls._session_factory = sqlalchemy.orm.sessionmaker(
+                bind=cls.get_engine()
+            )
 
-    @staticmethod
-    def get_environ_db_connection_key() -> str:
-        """ Environment db connection key name """
-        return 'DB_CONNECTION'
+        return cls._session_factory()

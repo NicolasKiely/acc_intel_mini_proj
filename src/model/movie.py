@@ -37,7 +37,7 @@ class MovieColor(db.ModelBase):
     pk = Column(Integer, primary_key=True, autoincrement=True)
 
     #: Movie color text
-    color = Column(String(31), nullable=False)
+    color = Column(String(31), nullable=False, unique=True)
 
     #: Movie relationship
     movies = relationship('Movie', back_populates='movie_color')
