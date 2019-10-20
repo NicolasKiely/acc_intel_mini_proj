@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+import re
 from typing import List
 
 import src.controller.movie
@@ -10,6 +11,10 @@ import src.utils
 from src.view import cli_view
 
 logger = logging.getLogger(__name__)
+
+
+# Regular expression for pulling out id from IMDB url
+IMDB_URL_ID_RE = re.compile('title/tt(\d+)/')
 
 
 class LoadDataView(cli_view.CliView):
@@ -111,6 +116,17 @@ def process_movie_records(session, data: pd.DataFrame):
         else:
             movie_color_pk = None
 
+        # Get movie's imdb id
+        imdb_link = record['movie_imdb_link']
+        if imdb_link:
+            search_results = IMDB_URL_ID_RE.search(imdb_link)
+            if search_results is None:
+                imdb_id = None
+            else:
+                imdb_id = search_results.group(1)
+        else:
+            imdb_id = None
+
         # Get movie's numerical stats
         aspect_ratio = src.utils.nan_to_none(record['aspect_ratio'])
         budget = src.utils.nan_to_none(record['budget'])
@@ -130,8 +146,8 @@ def process_movie_records(session, data: pd.DataFrame):
         ).execute(
             movie_title=movie_title, title_year=movie_year,
             color_pk=movie_color_pk, aspect_ratio=aspect_ratio, budget=budget,
-            cast_facebook_likes=cast_likes, duration=duration,facenum=facenum,
-            gross=gross, imdb_score=imdb_score,
+            cast_facebook_likes=cast_likes, duration=duration, facenum=facenum,
+            gross=gross, imdb_id=imdb_id, imdb_score=imdb_score,
             movie_facebook_likes=facebook_likes,
             num_critic_for_reviews=num_critic, num_user_for_reviews=num_user,
             num_voted_users=num_voted

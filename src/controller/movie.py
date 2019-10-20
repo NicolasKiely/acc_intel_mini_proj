@@ -10,9 +10,10 @@ class AddMovie(action.ControllerAction):
     def execute(
             self, movie_title: str, title_year: str, color_pk: int,
             aspect_ratio: float, budget: float, cast_facebook_likes: int,
-            duration: int, facenum: int, gross: float, imdb_score: float,
-            movie_facebook_likes: int, num_critic_for_reviews: int,
-            num_user_for_reviews: int, num_voted_users: int
+            duration: int, facenum: int, gross: float, imdb_id: str,
+            imdb_score: float, movie_facebook_likes: int,
+            num_critic_for_reviews: int, num_user_for_reviews: int,
+            num_voted_users: int
     ):
         session = self.get_session()
 
@@ -46,6 +47,7 @@ class AddMovie(action.ControllerAction):
         movie_record.duration = duration
         movie_record.facenum = facenum
         movie_record.gross = gross
+        movie_record.imdb_id = imdb_id
         movie_record.imdb_score = imdb_score
         movie_record.movie_facebook_likes = movie_facebook_likes
         movie_record.num_critic_for_reviews = num_critic_for_reviews

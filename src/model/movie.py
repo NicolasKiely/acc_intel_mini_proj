@@ -56,6 +56,9 @@ class Movie(db.ModelBase):
     #: Gross revenue
     gross = Column(Float, nullable=True)
 
+    #: IMDB id
+    imdb_id = Column(String(32), nullable=True)
+
     #: IMDB score
     imdb_score = Column(Float, nullable=True)
 
