@@ -106,3 +106,9 @@ class ContentRatingIndexLookup(MovieFieldIndexLookup):
     """ Action for building lookup of content rating id by name """
     def query(self) -> Dict[str, int]:
         return self.query_index_lookup(src.model.fields.ContentRating)
+
+
+class AddGenres(AddMovieFieldBaseClass):
+    """ Action to add list of genres to db, if they don't exist """
+    def execute(self, genre_names: List[str]):
+        self.execute_add(genre_names, src.model.fields.Genre, 'genre')

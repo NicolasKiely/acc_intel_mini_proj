@@ -54,18 +54,37 @@ class LoadDataView(cli_view.CliView):
         src.controller.fields.AddContentRating(logger).execute(
             rating_names=get_clean_category_names(data['content_rating'])
         )
+        src.controller.fields.AddGenres(logger).execute(
+            genre_names=get_clean_keyword_names(data['genres'])
+        )
 
         # Process move record itself
         process_movie_records(session, data)
 
 
 def get_clean_category_names(data_column):
-    """ Adds list of unique languages in database from data input """
+    """ Returns list of unique categories from data input column """
     return [
         raw_name.strip().lower()
         for raw_name in data_column.unique()
         if not pd.isna(raw_name)
     ]
+
+
+def get_clean_keyword_names(data_column, delim='|'):
+    """ Returns list of unique keywords from data input column """
+    keyword_set = set()
+    for raw_keywords in data_column:
+        if pd.isna(raw_keywords):
+            continue
+
+        for raw_keyword in raw_keywords.split(delim):
+            keyword = raw_keyword.strip().lower()
+            if not keyword:
+                continue
+            keyword_set.add(keyword)
+
+    return list(keyword_set)
 
 
 def lookup_category_id(raw_name: str, lookup):
