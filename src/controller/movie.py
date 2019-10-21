@@ -11,10 +11,10 @@ class AddMovie(action.ControllerAction):
     """ Adds movie record if it doesn't exist, otherwise updates it """
     def execute(
             self, movie_title: str, title_year: str, color_pk: int,
-            content_rating_pk: int, country_pk: int, language_pk: int,
-            aspect_ratio: float, budget: float, cast_facebook_likes: int,
-            duration: int, facenum: int, gross: float, imdb_id: str,
-            imdb_score: float, movie_facebook_likes: int,
+            content_rating_pk: int, country_pk: int, director_pk: int,
+            language_pk: int, aspect_ratio: float, budget: float,
+            cast_facebook_likes: int, duration: int, facenum: int, gross: float,
+            imdb_id: str, imdb_score: float, movie_facebook_likes: int,
             num_critic_for_reviews: int, num_user_for_reviews: int,
             num_voted_users: int
     ):
@@ -43,6 +43,7 @@ class AddMovie(action.ControllerAction):
         # Set movie category fields
         movie_record.content_rating_pk = content_rating_pk
         movie_record.country_pk = country_pk
+        movie_record.director_pk = director_pk
         movie_record.language_pk = language_pk
         movie_record.movie_color_pk = color_pk
 

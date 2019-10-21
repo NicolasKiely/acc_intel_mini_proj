@@ -129,6 +129,9 @@ def process_movie_records(session, data: pd.DataFrame):
     rating_lookup = src.controller.fields.ContentRatingIndexLookup(
         logger
     ).query()
+    person_lookup = src.controller.person.PersonIndexLookup(
+        logger
+    ).query()
 
     # Lookup of movie record number by title+year
     movie_title_index = {}
@@ -174,6 +177,7 @@ def process_movie_records(session, data: pd.DataFrame):
         country_pk = lookup_category_id(record['country'], country_lookup)
         language_pk = lookup_category_id(record['language'], language_lookup)
         rating_pk = lookup_category_id(record['content_rating'], rating_lookup)
+        director_pk = lookup_category_id(record['director_name'], person_lookup)
 
         # Get movie's imdb id
         imdb_link = record['movie_imdb_link']
@@ -205,8 +209,8 @@ def process_movie_records(session, data: pd.DataFrame):
         ).execute(
             movie_title=movie_title, title_year=movie_year,
             content_rating_pk=rating_pk, color_pk=movie_color_pk,
-            country_pk=country_pk, language_pk=language_pk,
-            aspect_ratio=aspect_ratio, budget=budget,
+            country_pk=country_pk, director_pk=director_pk,
+            language_pk=language_pk, aspect_ratio=aspect_ratio, budget=budget,
             cast_facebook_likes=cast_likes, duration=duration, facenum=facenum,
             gross=gross, imdb_id=imdb_id, imdb_score=imdb_score,
             movie_facebook_likes=facebook_likes,
