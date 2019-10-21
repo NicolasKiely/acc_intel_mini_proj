@@ -74,6 +74,11 @@ testing for the views. The controller may need to be refactored a bit to be
 more friendly to unit testing though.
 
 - More stat queries for actors, movies, and directors.
+Maybe a regression model or something fun.
 
 - Load facebook likes for the actors/directors. Right now those fields are
 getting dropped.
+
+- Replace the query in rank-personnel with an aggregation query. Right now
+the aggregation is done in code, which is very slow as it has to keep loading
+the movie records.
