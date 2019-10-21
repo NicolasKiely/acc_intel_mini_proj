@@ -20,6 +20,7 @@ from sqlalchemy.orm import relationship
 from src.model import db
 from src.model import common
 import src.model.fields
+import src.model.person
 
 
 class Movie(db.ModelBase):
@@ -90,6 +91,10 @@ class Movie(db.ModelBase):
     movie_color_pk = Column(Integer, ForeignKey('movie_colors.pk'))
     movie_color = relationship('MovieColor', back_populates='movies')
 
+    #: Foreign key to director person
+    director_pk = Column(Integer, ForeignKey('person.pk'))
+    director = relationship('Person', back_populates='directed_movies')
+
     #: Genres relation
     genres = relationship(
         'Genre', secondary=common.movie_genres, back_populates='movies'
@@ -98,6 +103,11 @@ class Movie(db.ModelBase):
     #: Keywords relation
     keywords = relationship(
         'Keyword', secondary=common.movie_keywords, back_populates='movies'
+    )
+
+    #: Actors relation
+    actors = relationship(
+        'Person', secondary=common.movie_actors, back_populates='acted_movies'
     )
 
     #: Movies are uniquely identified by title and year

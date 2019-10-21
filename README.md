@@ -47,6 +47,7 @@ Path name to input data set, defaults to "data/movie_metadata.csv".
 - The user has full permissions to access and edit the data
 - There are no performance requirements to complete tasks quickly
 - Any trouble making records should be dropped rather than manually fixed
+- The environment has python >=3.6 and is Linux or Unix-Like
 
 
 ## Input Data

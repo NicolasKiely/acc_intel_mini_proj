@@ -35,7 +35,7 @@ class RankGenresView(cli_view.CliView):
             reverse=True
         )[:num_genres]
 
-        print('Genre\tProfit')
-        print('-----\t------')
+        print('Genre\tAverage Profit')
+        print('-----\t--------------')
         for genre, profit in genre_profit_list:
             print('%s\t%s' % (genre, int(profit)))
