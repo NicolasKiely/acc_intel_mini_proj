@@ -5,6 +5,7 @@ from typing import List
 
 import src.controller.movie
 import src.controller.fields
+import src.controller.person
 import src.model.db
 import src.model.movie
 import src.utils
@@ -60,6 +61,17 @@ class LoadDataView(cli_view.CliView):
         )
         src.controller.fields.AddPlotKeywords(logger).execute(
             keyword_names=get_clean_keyword_names(data['plot_keywords'])
+        )
+
+        # Get personnel
+        person_names = (
+            get_clean_category_names(data['director_name'])
+            + get_clean_category_names(data['actor_1_name'])
+            + get_clean_category_names(data['actor_2_name'])
+            + get_clean_category_names(data['actor_3_name'])
+        )
+        src.controller.person.AddPersons(logger).execute(
+            person_names=person_names
         )
 
         # Process move record itself
