@@ -210,6 +210,7 @@ def process_movie_keywords(session, data: pd.DataFrame):
     movie_title_index = {}
     movie_index = src.controller.movie.MovieLookupIndex(logger).query()
     genre_index = src.controller.fields.GenreIndexLookup(logger).query()
+    keyword_index = src.controller.fields.PlotKeywordIndexLookup(logger).query()
 
     print('Updating movie mappings')
     for i, record in data.iterrows():
@@ -239,17 +240,32 @@ def process_movie_keywords(session, data: pd.DataFrame):
             # Mark movie by record number in dataframe
             movie_title_index[movie_title_l] = record_no
 
-        # Get moview and genre ids
+        # Get movies, keywords, and genre ids
         movie_pk = movie_index[movie_record_index]
 
-        genre_names = [
-            name.strip().lower() for name in record['genres'].split('|')
-        ]
+        if pd.isna(record['genres']):
+            genre_names = []
+        else:
+            genre_names = [
+                name.strip().lower() for name in record['genres'].split('|')
+            ]
         genre_pks = [genre_index[name] for name in genre_names]
 
-        # Add genres to movie
+        if pd.isna(record['plot_keywords']):
+            keyword_names = []
+        else:
+            keyword_names = [
+                name.strip().lower()
+                for name in record['plot_keywords'].split('|')
+            ]
+        keyword_pks = [keyword_index[name] for name in keyword_names]
+
+        # Add genres and keywords to movie
         src.controller.movie.AttachMovieGenre(
             logger=logger, session=session, commit_enabled=False
         ).execute(movie_pk=movie_pk, genre_pks=genre_pks)
+        src.controller.movie.AttachMoviePlotKeywords(
+            logger=logger, session=session, commit_enabled=False
+        ).execute(movie_pk=movie_pk, keyword_pks=keyword_pks)
 
     session.commit()

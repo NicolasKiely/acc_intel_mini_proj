@@ -13,7 +13,7 @@ movie_genres = Table(
 
 #: Many-many table for movies to keywords
 movie_keywords = Table(
-    'movie_keywiards', db.ModelBase.metadata,
+    'movie_keywords', db.ModelBase.metadata,
     Column('movie_pk', ForeignKey('movie.pk'), primary_key=True),
     Column('keyword_pk', ForeignKey('keyword.pk'), primary_key=True)
 )

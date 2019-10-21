@@ -106,3 +106,30 @@ class AttachMovieGenre(action.ControllerAction):
     @abc.abstractmethod
     def query(self, **kwargs):
         pass
+
+
+class AttachMoviePlotKeywords(action.ControllerAction):
+    """ Attaches keywords to movie. Records must exist in db. """
+    def execute(self, movie_pk: int, keyword_pks: List[int]):
+        session = self.get_session()
+
+        # Fetch movie record
+        movie_record = session.query(
+            src.model.movie.Movie
+        ).filter(src.model.movie.Movie.pk == movie_pk).one()
+
+        # Fetch genre records
+        keyword_records = session.query(
+            src.model.fields.Keyword
+        ).filter(src.model.fields.Keyword.pk.in_(keyword_pks)).all()
+
+        for keyword_record in keyword_records:
+            if keyword_record in movie_record.keywords:
+                continue
+            movie_record.keywords.append(keyword_record)
+
+        self.commit(session)
+
+    @abc.abstractmethod
+    def query(self, **kwargs):
+        pass
