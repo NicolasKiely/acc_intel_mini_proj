@@ -60,3 +60,20 @@ The file 'data/movie_metadata.csv' was downloaded from
 on 2019-10-17 under the Open Database license.
 
 Some records (eg with comma in title) may get dropped to avoid problems.
+
+
+## Todo
+
+Given the constraints of time, not all features are implemented yet.
+
+- Implement a small rest service. This would mostly just be a new type of views
+using the same controller but returning json responses instead.
+
+- Testing. Unit testing for the business logic and integration/user acceptance
+testing for the views. The controller may need to be refactored a bit to be
+more friendly to unit testing though.
+
+- More stat queries for actors, movies, and directors.
+
+- Load facebook likes for the actors/directors. Right now those fields are
+getting dropped.
