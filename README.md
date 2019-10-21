@@ -12,6 +12,9 @@ for general usage.
 To load data into a database, run
 `python cli.py load-data`.
 
+To rank movie genres by profitability, run
+`python cli.py rank-genre [num_genres]`.
+
 
 ## Project Structure
 
