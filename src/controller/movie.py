@@ -86,6 +86,22 @@ class AttachMovieGenre(action.ControllerAction):
     def execute(self, movie_pk: int, genre_pks: List[int]):
         session = self.get_session()
 
+        # Fetch movie record
+        movie_record = session.query(
+            src.model.movie.Movie
+        ).filter(src.model.movie.Movie.pk == movie_pk).one()
+
+        # Fetch genre records
+        genre_records = session.query(
+            src.model.fields.Genre
+        ).filter(src.model.fields.Genre.pk.in_(genre_pks)).all()
+
+        for genre_record in genre_records:
+            if genre_record in movie_record.genres:
+                continue
+            movie_record.genres.append(genre_record)
+
+        self.commit(session)
 
     @abc.abstractmethod
     def query(self, **kwargs):

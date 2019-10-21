@@ -42,6 +42,7 @@ class LoadDataView(cli_view.CliView):
         session = src.model.db.EngineWrapper.get_session()
 
         # Process movie category fields
+        print('Updating initial field tables')
         src.controller.fields.AddMovieColors(logger).execute(
             color_names=get_clean_category_names(data['color'])
         )
@@ -208,6 +209,9 @@ def process_movie_keywords(session, data: pd.DataFrame):
     """ Attaches genre keywords to movie records """
     movie_title_index = {}
     movie_index = src.controller.movie.MovieLookupIndex(logger).query()
+    genre_index = src.controller.fields.GenreIndexLookup(logger).query()
+
+    print('Updating movie mappings')
     for i, record in data.iterrows():
         record_no = i+1
 
@@ -235,6 +239,17 @@ def process_movie_keywords(session, data: pd.DataFrame):
             # Mark movie by record number in dataframe
             movie_title_index[movie_title_l] = record_no
 
+        # Get moview and genre ids
         movie_pk = movie_index[movie_record_index]
 
-    #session.commit()
+        genre_names = [
+            name.strip().lower() for name in record['genres'].split('|')
+        ]
+        genre_pks = [genre_index[name] for name in genre_names]
+
+        # Add genres to movie
+        src.controller.movie.AttachMovieGenre(
+            logger=logger, session=session, commit_enabled=False
+        ).execute(movie_pk=movie_pk, genre_pks=genre_pks)
+
+    session.commit()
