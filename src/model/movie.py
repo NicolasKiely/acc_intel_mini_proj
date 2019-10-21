@@ -5,13 +5,12 @@ Unnormalized movie fields:
     actor_1_name, actor_1_facebook_likes,
     actor_2_name, actor_2_facebook_likes,
     actor_3_name, actor_3_facebook_likes,
-    plot_keywords, genres,
 
 Normalized movie fields:
     aspect_ratio, budget, cast_facebook_likes, color, content_rating, country,
-    duration, facenumber_in_poster, gross, imdb_id, imdb_score, language,
-    movie_facebook_likes, movie_title, num_critic_for_reviews, num_voted_users,
-    num_user_for_reviews, title_year
+    duration, facenumber_in_poster, genres, gross, imdb_id, imdb_score,
+    language, movie_facebook_likes, movie_title, num_critic_for_reviews,
+    num_voted_users, num_user_for_reviews, plot_keywords, title_year
 """
 from sqlalchemy import (
     Column, ForeignKey, Integer, String, UniqueConstraint, Float

@@ -1,6 +1,7 @@
 import logging
 from typing import List
 
+import src.controller.stats
 from src.view import cli_view
 
 
@@ -23,4 +24,18 @@ class RankGenresView(cli_view.CliView):
             print('Usage: %s [num_genres]' % self.get_cli_name())
             return
 
+        # Get genre profitability
         logger.info('Loading top %s genres' % num_genres)
+        genre_profit_map = src.controller.stats.GenreProfit(logger).query()
+
+        # Convert to list
+        genre_profit_list = sorted(
+            [(genre, profit) for genre, profit in genre_profit_map.items()],
+            key=lambda x: x[1],
+            reverse=True
+        )[:num_genres]
+
+        print('Genre\tProfit')
+        print('-----\t------')
+        for genre, profit in genre_profit_list:
+            print('%s\t%s' % (genre, int(profit)))
