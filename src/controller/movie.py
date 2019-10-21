@@ -5,6 +5,7 @@ from typing import List
 from src.controller import action
 import src.model.movie
 import src.model.fields
+import src.model.person
 
 
 class AddMovie(action.ControllerAction):
@@ -119,7 +120,7 @@ class AttachMoviePlotKeywords(action.ControllerAction):
             src.model.movie.Movie
         ).filter(src.model.movie.Movie.pk == movie_pk).one()
 
-        # Fetch genre records
+        # Fetch keyword records
         keyword_records = session.query(
             src.model.fields.Keyword
         ).filter(src.model.fields.Keyword.pk.in_(keyword_pks)).all()
@@ -128,6 +129,33 @@ class AttachMoviePlotKeywords(action.ControllerAction):
             if keyword_record in movie_record.keywords:
                 continue
             movie_record.keywords.append(keyword_record)
+
+        self.commit(session)
+
+    @abc.abstractmethod
+    def query(self, **kwargs):
+        pass
+
+
+class AttachMovieActors(action.ControllerAction):
+    """ Attaches actors to movie. Records must exist in db. """
+    def execute(self, movie_pk: int, actor_pks: List[int]):
+        session = self.get_session()
+
+        # Fetch movie record
+        movie_record = session.query(
+            src.model.movie.Movie
+        ).filter(src.model.movie.Movie.pk == movie_pk).one()
+
+        # Fetch person records
+        person_records = session.query(
+            src.model.person.Person
+        ).filter(src.model.person.Person.pk.in_(actor_pks)).all()
+
+        for person_record in person_records:
+            if person_record in movie_record.actors:
+                continue
+            movie_record.actors.append(person_record)
 
         self.commit(session)
 
